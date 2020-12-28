@@ -74,8 +74,6 @@ class Snake:
         head = self.snakeParts[0]
         if self.containsDups(self.snakeParts):
             return True
-        elif [head[0]+self.speed*self.dirs[self.heading][0],head[1]+self.speed*self.dirs[self.heading][1]] in self.snakeParts:
-            return True
         elif not (0<=head[0]<gX and 0<=head[1]<gY):
             return True
         else:

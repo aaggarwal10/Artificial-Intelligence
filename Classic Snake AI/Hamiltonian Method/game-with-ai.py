@@ -19,12 +19,13 @@ class Snake:
         self.snakeParts = [[3,3]]
         self.heading = 0
         self.partSize = gridBSize
-        self.foodPosition = self.getFoodPos(allP,self.snakeParts)
+        self.foodPosition = [20,0]
     
-    def move_forw(self,allPos):
+    def move_forw(self,allPos,gridX, hCyc):
         head = self.snakeParts[0][:]
-        head[0]+=self.speed*self.dirs[self.heading][0]
-        head[1]+=self.speed*self.dirs[self.heading][1]
+        hNode = head[0]+head[1]*gridX
+        nNode = hCyc[hNode]
+        head = allPos[nNode]
         if head == self.foodPosition:
             self.foodPosition = self.getFoodPos(allPos,self.snakeParts)
         else:
@@ -68,8 +69,6 @@ class Snake:
     def check_death(self, gX, gY):
         head = self.snakeParts[0]
         if self.containsDups(self.snakeParts):
-            return True
-        elif [head[0]+self.speed*self.dirs[self.heading][0],head[1]+self.speed*self.dirs[self.heading][1]] in self.snakeParts:
             return True
         elif not (0<=head[0]<gX and 0<=head[1]<gY):
             return True
@@ -213,7 +212,7 @@ def HamiltonianCyc(gridX,gridY):
 
     
     
-
+hCyc = HamiltonianCyc(gridX,gridY)
 
 allPos = []
 for y in range(gridY):
@@ -231,10 +230,9 @@ while running:
             mySnake.change_heading(event.key)
     if mySnake.check_death(gridX,gridY):
         running=False
-    mySnake.move_forw(allPos)
+    mySnake.move_forw(allPos,gridX,hCyc)
     mySnake.draw_snake_food(screen)
-    pygame.draw.rect(screen,(255,255,255), (40,0, 20, 20))
 
-    time.sleep(0.04)
+    time.sleep(0.0001)
     pygame.display.flip()
 pygame.quit()
