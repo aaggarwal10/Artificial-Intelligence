@@ -1,6 +1,11 @@
 gX = 10
 gY = 6
 
+gridPoints = []
+for y in range(gY):
+    for x in range(gX):
+        gridPoints.append([x,y])
+
 mX = gX//2
 mY = gY//2
 
@@ -79,8 +84,19 @@ def fillPath(start,mX,mY):
                     nY = direc[1]+y
                     if maze[nY][nX]==".":
                         maze[nY][nX]="1"
+                        
 
     return maze
+
+def shrink(pathD,mX,gX):
+    n=2*(mX*4-1)
+    newDict = {}
+    for key in pathD:
+        k = gX*((key)//n) + (key%n)//2
+        v = gX*((pathD[key])//n) + (pathD[key]%n)//2
+        newDict[k]=v
+    return newDict
+    
 start = 5
 path = fillPath(start,mX,mY)
 
@@ -104,7 +120,10 @@ while len(que)!=0:
             nNode = nPX2+nPY2*pathX
             pathDict[curNode] = nNode
             que.append([nPX2,nPY2])
-print(pathDict)
+            break
+
+hamiltonCyc = shrink(pathDict,mX,gX)
+hamiltonCyc[hamiltonCyc[list(hamiltonCyc.keys())[-1]]] = list(hamiltonCyc.keys())[0]
 
 
     
