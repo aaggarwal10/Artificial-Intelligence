@@ -1,13 +1,9 @@
-gX = 10
-gY = 6
+gridX = 10
+gridY = 6
 
-gridPoints = []
-for y in range(gY):
-    for x in range(gX):
-        gridPoints.append([x,y])
 
-mX = gX//2
-mY = gY//2
+mX = gridX//2
+mY = gridY//2
 
 mazePoints = []
 for y in range(mY):
@@ -62,7 +58,6 @@ def makeMaze(start,mX,mY):
     adjDict = transform(mst(start,mX,mY),mX)
     for startInd in adjDict:
         for endInd in adjDict[startInd]:
-            print(startInd,endInd)
             startP = gridPoints[startInd]
             endP = gridPoints[endInd]
             if startP[0]==endP[0]:
@@ -122,7 +117,7 @@ while len(que)!=0:
             que.append([nPX2,nPY2])
             break
 
-hamiltonCyc = shrink(pathDict,mX,gX)
+hamiltonCyc = shrink(pathDict,mX,gridX)
 hamiltonCyc[hamiltonCyc[list(hamiltonCyc.keys())[-1]]] = list(hamiltonCyc.keys())[0]
 
 
