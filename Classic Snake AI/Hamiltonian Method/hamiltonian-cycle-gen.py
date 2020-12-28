@@ -81,7 +81,30 @@ def fillPath(start,mX,mY):
                         maze[nY][nX]="1"
 
     return maze
+start = 5
+path = fillPath(start,mX,mY)
 
+sPoint = [0,0]
+que = [sPoint]
+path[0][0] = "0"
+pathDict = {}
+pathX = 4*mX-1
+while len(que)!=0:
+    dirs = [[1,0],[-1,0],[0,1],[0,-1]]
+    curPoint = que.pop(0)
+
+    for direc in dirs:
+        nPX = curPoint[0]+direc[0]
+        nPY = curPoint[1]+direc[1]
+        nPX2 = curPoint[0]+direc[0]*2
+        nPY2 = curPoint[1]+direc[1]*2
+        if 0<=nPX<4*mX-1 and 0<=nPY<4*mY-1 and path[nPY][nPX]==path[nPY2][nPX2] == "1":
+            path[nPY2][nPX2]="0"
+            curNode = curPoint[0]+curPoint[1]*pathX
+            nNode = nPX2+nPY2*pathX
+            pathDict[curNode] = nNode
+            que.append([nPX2,nPY2])
+print(pathDict)
 
 
     
