@@ -32,18 +32,18 @@ class Snake:
             self.snakeParts.pop()
         self.snakeParts=[head]+self.snakeParts
 
-    def draw_snake_food(self,display):
+    def draw_snake_food(self,display,done):
         display.fill((0,0,0))
+        sCol = (0,255,0)
+        fCol = (255,255,0)
+        if done:
+            sCol = (255,0,255)
+            fCol = (0,0,255)
         for part in self.snakeParts:
-            pygame.draw.rect(display,(0,255,0), (part[0]*self.partSize,part[1]*self.partSize,
+            pygame.draw.rect(display,sCol, (part[0]*self.partSize,part[1]*self.partSize,
                                                      self.partSize,self.partSize))
-        if self.foodPosition in self.snakeParts:
-            pygame.draw.rect(display,(0,0,255), (self.foodPosition[0]*self.partSize,self.foodPosition[1]*self.partSize,
-                                              self.partSize,self.partSize))
-        else:
-            pygame.draw.rect(display,(255,255,0), (self.foodPosition[0]*self.partSize,self.foodPosition[1]*self.partSize,
-                                              self.partSize,self.partSize))
-                                              
+        pygame.draw.rect(display,fCol, (self.foodPosition[0]*self.partSize,self.foodPosition[1]*self.partSize,
+                                          self.partSize,self.partSize))                                              
             
             
     def change_heading(self,key):
@@ -95,6 +95,7 @@ for y in range(gridY):
 
 mySnake = Snake(1,allPos,gridBSize)
 running = True
+gameDone = False
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -102,10 +103,10 @@ while running:
         elif event.type == pygame.KEYUP:
             mySnake.change_heading(event.key)
     if mySnake.check_death(gridX,gridY):
-        running=False
-    mySnake.move_forw(allPos,gridX,hCyc)
-    mySnake.draw_snake_food(screen)
+        gameDone = True
+    if not gameDone:
+        mySnake.move_forw(allPos,gridX,hCyc)
+    mySnake.draw_snake_food(screen,gameDone)
     time.sleep(0.01)
     pygame.display.flip()
-time.sleep(10)
 pygame.quit()
