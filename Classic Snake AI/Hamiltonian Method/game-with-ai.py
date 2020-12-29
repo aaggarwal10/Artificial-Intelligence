@@ -19,15 +19,15 @@ class Snake:
         self.snakeParts = [[3,3]]
         self.heading = 0
         self.partSize = gridBSize
-        self.foodPosition = [20,0]
+        self.foodPosition = self.getFoodPos(allPos,self.snakeParts)
     
     def move_forw(self,allPos,gridX, hCyc):
         head = self.snakeParts[0][:]
         hNode = head[0]+head[1]*gridX
         nNode = hCyc[hNode]
         head = allPos[nNode]
-        if head == self.foodPosition:
-            self.foodPosition = self.getFoodPos(allPos,self.snakeParts)
+        if self.foodPosition in self.snakeParts:
+            self.foodPosition = self.getFoodPos(allPos,self.snakeParts)         
         else:
             self.snakeParts.pop()
         self.snakeParts=[head]+self.snakeParts
@@ -37,7 +37,11 @@ class Snake:
         for part in self.snakeParts:
             pygame.draw.rect(display,(0,255,0), (part[0]*self.partSize,part[1]*self.partSize,
                                                      self.partSize,self.partSize))
-        pygame.draw.rect(display,(255,255,0), (self.foodPosition[0]*self.partSize,self.foodPosition[1]*self.partSize,
+        if self.foodPosition in self.snakeParts:
+            pygame.draw.rect(display,(0,0,255), (self.foodPosition[0]*self.partSize,self.foodPosition[1]*self.partSize,
+                                              self.partSize,self.partSize))
+        else:
+            pygame.draw.rect(display,(255,255,0), (self.foodPosition[0]*self.partSize,self.foodPosition[1]*self.partSize,
                                               self.partSize,self.partSize))
                                               
             
@@ -75,8 +79,8 @@ class Snake:
         else:
             return False
 
-gridX = 64
-gridY = 36
+gridX = 18
+gridY = 10
 gridBSize= 20
 screen = pygame.display.set_mode([gridX*gridBSize,gridY*gridBSize])
 
@@ -232,7 +236,7 @@ while running:
         running=False
     mySnake.move_forw(allPos,gridX,hCyc)
     mySnake.draw_snake_food(screen)
-
-    time.sleep(0.0001)
+    time.sleep(0.01)
     pygame.display.flip()
+time.sleep(10)
 pygame.quit()
