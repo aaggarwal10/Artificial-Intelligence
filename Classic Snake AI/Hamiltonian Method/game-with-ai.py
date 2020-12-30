@@ -16,7 +16,7 @@ class Snake:
     partSize = 0
     foodPosition = []
     def __init__(self,speed,allP,gridBSize):
-        self.snakeParts = [[3,3]]
+        self.snakeParts = [choice(allP)]
         self.heading = 0
         self.partSize = gridBSize
         self.foodPosition = self.getFoodPos(allPos,self.snakeParts)
