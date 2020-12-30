@@ -127,8 +127,8 @@ class Snake:
         else:
                 return False
 
-gridX = 18
-gridY = 10
+gridX = 36
+gridY = 18
 gridBSize= 20
 screen = pygame.display.set_mode([gridX*gridBSize,gridY*gridBSize])
   
