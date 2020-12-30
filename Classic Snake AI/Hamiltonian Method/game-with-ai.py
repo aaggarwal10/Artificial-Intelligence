@@ -21,11 +21,60 @@ class Snake:
         self.partSize = gridBSize
         self.foodPosition = self.getFoodPos(allPos,self.snakeParts)
     
-    def move_forw(self,allPos,gridX, hCyc):
+    def pathDist(self,start,end,hCyc):
+        c = 0
+        while True:
+            c+=1
+            if start==end:
+                break
+            else:
+                start = hCyc[start]
+        return c
+
+    def distDict(self,possPoints,foodNode,gX,hCyc):
+        d = {}
+        for point in possPoints:
+            node = point[0]+gX*point[1]
+            d[self.pathDist(node,foodNode,hCyc)] = point
+        return d
+
+    def bestMove(self,possPoints,foodNode,gX,hCyc,hNode):
+        distD = self.distDict(possPoints,foodNode,gX,hCyc)
+        for dist in sorted(distD):
+            point = distD[dist]
+            nNode = point[0]+point[1]*gX
+            if hCyc[hNode]==nNode:
+                return nNode
+            else:
+                c = 0
+                start = nNode
+                while True:
+                    c += 1
+                    if allPos[hCyc[start]] in self.snakeParts:
+                        break
+                    else:
+                        start = hCyc[start]
+                if len(self.snakeParts)<c:
+                    return nNode
+        return hCyc[hNode]
+                        
+                    
+            
+    def move_forw(self,allPos,gridX,gridY, hCyc):
         head = self.snakeParts[0][:]
         hNode = head[0]+head[1]*gridX
-        nNode = hCyc[hNode]
+        foodNode = self.foodPosition[0]+self.foodPosition[1]*gridX
+
+        posP = []
+        for direc in self.dirs:
+            nPX = head[0]+direc[0]
+            nPY = head[1]+direc[1]
+            nP = [nPX,nPY]
+            if 0<=nPX<gridX and 0<=nPY<gridY and nP not in self.snakeParts:
+                posP.append(nP)
+        nNode = self.bestMove(posP,foodNode,gridX,hCyc,hNode)
         head = allPos[nNode]
+        
         if self.foodPosition in self.snakeParts:
             self.foodPosition = self.getFoodPos(allPos,self.snakeParts)         
         else:
@@ -37,7 +86,6 @@ class Snake:
         sCol = (0,255,0)
         fCol = (255,255,0)
         if done:
-            sCol = (255,0,255)
             fCol = (0,0,255)
         for part in self.snakeParts:
             pygame.draw.rect(display,sCol, (part[0]*self.partSize,part[1]*self.partSize,
@@ -100,12 +148,10 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        elif event.type == pygame.KEYUP:
-            mySnake.change_heading(event.key)
     if mySnake.check_death(gridX,gridY):
         gameDone = True
     if not gameDone:
-        mySnake.move_forw(allPos,gridX,hCyc)
+        mySnake.move_forw(allPos,gridX,gridY,hCyc)
     mySnake.draw_snake_food(screen,gameDone)
     time.sleep(0.01)
     pygame.display.flip()
