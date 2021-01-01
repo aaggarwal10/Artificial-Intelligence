@@ -28,3 +28,22 @@ print ("Weights After")
 print(synaptic_weights)
 print("Out aft Training")
 print(outputs)
+
+"""
+Proto 1: Snake AI
+-> Start with 8 Input Nodes for each direction from head including nodes.
+-> For each direction encode 3 hidden layers that hold 3 different types of
+   info:
+       -> Distance to wall
+       -> Distance to a Body Piece
+           -> if not set to really high number
+       -> Distance to Food (if any)
+           -> if not set to really high number
+-> Output Nodes: 4 Nodes representing Cardinal Direction snake takes.
+
+This entire process was what Code Bullet used for his first Snake AI. I am
+going to use it as a start point. Through other research I found that this AI
+needs improvement through other heuristic searches and algorithms. (i.e. Monte
+Carlo, DNQ algorithm, etc.)
+
+"""
