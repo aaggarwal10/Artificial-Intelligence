@@ -2,7 +2,7 @@ import pygame
 from random import *
 import time
 import itertools
-
+import copy
 pygame.init()
 
 gridX = 64
@@ -46,15 +46,8 @@ class Snake:
                                               
             
             
-    def change_heading(self,key):
-        if key==pygame.K_RIGHT:
-            self.heading = 0
-        elif key==pygame.K_UP:
-            self.heading = 1
-        elif key==pygame.K_LEFT:
-            self.heading = 2
-        elif key==pygame.K_DOWN:
-            self.heading = 3
+    def change_heading(self):
+        self.heading = randint(0,3)
 
     def getFoodPos(self,gX,gY,posTaken):
         allPositions = list(itertools.product(*[[x for x in range(gX)],[y for y in range(gY)]]))
@@ -81,16 +74,21 @@ class Snake:
     
 mySnake = Snake(1,gridX,gridY,gridBSize)
 running = True
+Game = []
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        elif event.type == pygame.KEYUP:
-            mySnake.change_heading(event.key)
     if mySnake.check_death(gridX,gridY):
         running=False
+    else:
+        y = [mySnake.snakeParts,mySnake.foodPosition,[gridX,gridY]]
+        Game.append(copy.deepcopy(y))
+        print(y)
     mySnake.move_forw(gridX,gridY)
     mySnake.draw_snake_food(screen)
+    if randint(0,1)==1:
+        mySnake.change_heading()
     time.sleep(0.04)
     pygame.display.flip()
 pygame.quit()
