@@ -5,8 +5,12 @@ import itertools
 import sys
 import math
 from HamCycle import HCyc
+import os
+import csv
+
 pygame.init()
 sys.setrecursionlimit(3000)
+os.chdir("..")
 
 class Snake:
     heading = 0 # 0: Right, 1: Up, 2: Left, 3: Down
@@ -57,8 +61,72 @@ class Snake:
                 if len(self.snakeParts)<c:
                     return nNode
         return hCyc[hNode]
-                        
-                    
+    
+    def hit_wall(self,direc,head,gX,gY):
+        maxD = math.sqrt((direc[0]*gX)**2+(direc[1]*gY)**2)
+
+        start = head[:]
+        dist = 0
+        while True:
+            start[0]+=direc[0]
+            start[1]+=direc[1]
+            if 0<=start[0]<gX and 0<=start[1]<gY:
+                dist+=1
+            else:
+                break
+        return dist/maxD
+
+    def hit_fruit(self,direc,head,gX,gY,foodP):
+        maxD = math.sqrt((direc[0]*gX)**2+(direc[1]*gY)**2)
+
+        start = head[:]
+        dist = 0
+        while True:
+            start[0]+=direc[0]
+            start[1]+=direc[1]
+            if 0<=start[0]<gX and 0<=start[1]<gY and start!=foodP:
+                dist+=1
+            elif start!=foodP:
+                dist = maxD*100
+                break
+            else:
+                break
+        return dist/maxD
+
+    def hit_self(self,direc,head,gX,gY):
+        maxD = math.sqrt((direc[0]*gX)**2+(direc[1]*gY)**2)
+
+        start = head[:]
+        dist = 0
+        while True:
+            start[0]+=direc[0]
+            start[1]+=direc[1]
+            if 0<=start[0]<gX and 0<=start[1]<gY and start not in self.snakeParts:
+                dist+=1
+            elif start not in self.snakeParts:
+                dist = maxD*100
+                break
+            else:
+                break
+        return dist/maxD
+    
+    def make_trial(self,head,out,gX,gY,foodP):
+        direcs = [[1,0],[1,-1],[0,-1],[-1,-1],[-1,0],[-1,1],[0,1],[1,1]]
+
+        new_obs = [self.hit_wall(direcs[0],head,gX,gY),self.hit_fruit(direcs[0],head,gX,gY,foodP),self.hit_self(direcs[0],head,gX,gY),
+                   self.hit_wall(direcs[1],head,gX,gY),self.hit_fruit(direcs[1],head,gX,gY,foodP),self.hit_self(direcs[1],head,gX,gY),
+                   self.hit_wall(direcs[2],head,gX,gY),self.hit_fruit(direcs[2],head,gX,gY,foodP),self.hit_self(direcs[2],head,gX,gY),
+                   self.hit_wall(direcs[3],head,gX,gY),self.hit_fruit(direcs[3],head,gX,gY,foodP),self.hit_self(direcs[3],head,gX,gY),
+                   self.hit_wall(direcs[4],head,gX,gY),self.hit_fruit(direcs[4],head,gX,gY,foodP),self.hit_self(direcs[4],head,gX,gY),
+                   self.hit_wall(direcs[5],head,gX,gY),self.hit_fruit(direcs[5],head,gX,gY,foodP),self.hit_self(direcs[5],head,gX,gY),
+                   self.hit_wall(direcs[6],head,gX,gY),self.hit_fruit(direcs[6],head,gX,gY,foodP),self.hit_self(direcs[6],head,gX,gY),
+                   self.hit_wall(direcs[7],head,gX,gY),self.hit_fruit(direcs[7],head,gX,gY,foodP),self.hit_self(direcs[7],head,gX,gY),out]
+
+        with open("training_data.csv", 'a',newline='') as f:
+            csv_writer = csv.writer(f)
+            csv_writer.writerow(new_obs)
+            f.close()
+
             
     def move_forw(self,allPos,gridX,gridY, hCyc):
         head = self.snakeParts[0][:]
@@ -73,7 +141,16 @@ class Snake:
             if 0<=nPX<gridX and 0<=nPY<gridY and nP not in self.snakeParts:
                 posP.append(nP)
         nNode = self.bestMove(posP,foodNode,gridX,hCyc,hNode)
+        
+        for direc in range(len(self.dirs)):
+            nPX = head[0]+self.dirs[direc][0]
+            nPY = head[1]+self.dirs[direc][1]
+            nP = [nPX,nPY]
+            if nP==allPos[nNode]:
+                out = direc
+
         head = allPos[nNode]
+        self.make_trial(head,out,gridX,gridY,self.foodPosition)
         
         if self.foodPosition in self.snakeParts:
             self.foodPosition = self.getFoodPos(allPos,self.snakeParts)         
@@ -128,7 +205,7 @@ class Snake:
         else:
                 return False
 
-gridX = 18
+gridX = 10
 gridY = 10
 gridBSize= 20
 screen = pygame.display.set_mode([gridX*gridBSize,gridY*gridBSize])
