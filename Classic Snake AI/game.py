@@ -36,18 +36,41 @@ class Snake:
             self.snakeParts.pop()
         self.snakeParts=[head]+self.snakeParts
 
-    def draw_snake_food(self,display):
+    def draw_snake_food(self,display,done):
         display.fill((0,0,0))
-        for part in self.snakeParts:
-            pygame.draw.rect(display,(0,255,0), (part[0]*self.partSize,part[1]*self.partSize,
-                                                     self.partSize,self.partSize))
-        pygame.draw.rect(display,(255,255,0), (self.foodPosition[0]*self.partSize,self.foodPosition[1]*self.partSize,
-                                              self.partSize,self.partSize))
+        fCol = (255,255,0)
+        sCol = (0,255,0)
+        if done:
+            fCol = (255,0,0)
+            sCol = (255,0,0)
+            
+        for part in range(len(self.snakeParts)):
+            
+            pygame.draw.rect(display,(0,0,0), (self.snakeParts[part][0]*self.partSize,self.snakeParts[part][1]*self.partSize,
+                                                     self.partSize,self.partSize),2)
+            pygame.draw.rect(display,sCol, (self.snakeParts[part][0]*self.partSize+1,self.snakeParts[part][1]*self.partSize+1,
+                                                     self.partSize-2,self.partSize-2))
+            if part>0:
+                posX = (self.snakeParts[part-1][0]*self.partSize+self.snakeParts[part][0]*self.partSize)/2+1
+                posY = (self.snakeParts[part-1][1]*self.partSize+self.snakeParts[part][1]*self.partSize)/2+1
+                pygame.draw.rect(display,sCol, (posX,posY,
+                                                     self.partSize-2,self.partSize-2))
+                
+
+        pygame.draw.rect(display,fCol, (self.foodPosition[0]*self.partSize,self.foodPosition[1]*self.partSize,
+                                          self.partSize,self.partSize))              
                                               
             
             
-    def change_heading(self):
-        self.heading = randint(0,3)
+    def change_heading(self,key):
+        if key==pygame.K_RIGHT:
+            self.heading = 0
+        elif key==pygame.K_UP:
+            self.heading = 1
+        elif key==pygame.K_LEFT:
+            self.heading = 2
+        elif key==pygame.K_DOWN:
+            self.heading = 3
 
     def getFoodPos(self,gX,gY,posTaken):
         allPositions = list(itertools.product(*[[x for x in range(gX)],[y for y in range(gY)]]))
@@ -74,21 +97,19 @@ class Snake:
     
 mySnake = Snake(1,gridX,gridY,gridBSize)
 running = True
+gameDone = False
 Game = []
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        elif event.type==pygame.KEYUP:
+            mySnake.change_heading(event.key)
     if mySnake.check_death(gridX,gridY):
-        running=False
+        gameDone=True
     else:
-        y = [mySnake.snakeParts,mySnake.foodPosition,[gridX,gridY]]
-        Game.append(copy.deepcopy(y))
-        print(y)
-    mySnake.move_forw(gridX,gridY)
-    mySnake.draw_snake_food(screen)
-    if randint(0,1)==1:
-        mySnake.change_heading()
+        mySnake.move_forw(gridX,gridY)
+    mySnake.draw_snake_food(screen,gameDone)
     time.sleep(0.04)
     pygame.display.flip()
 pygame.quit()

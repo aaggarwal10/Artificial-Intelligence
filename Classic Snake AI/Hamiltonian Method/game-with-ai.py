@@ -83,16 +83,23 @@ class Snake:
 
     def draw_snake_food(self,display,done):
         display.fill((0,0,0))
-        sCol = (0,255,0)
         fCol = (255,255,0)
-        if done:
-            fCol = (0,0,255)
-        for part in self.snakeParts:
-            pygame.draw.rect(display,sCol, (part[0]*self.partSize,part[1]*self.partSize,
-                                                     self.partSize,self.partSize))
-
-        pygame.draw.rect(display,fCol, (self.foodPosition[0]*self.partSize,self.foodPosition[1]*self.partSize,
-                                          self.partSize,self.partSize))                                              
+            
+        for part in range(len(self.snakeParts)):
+            
+            pygame.draw.rect(display,(0,0,0), (self.snakeParts[part][0]*self.partSize,self.snakeParts[part][1]*self.partSize,
+                                                     self.partSize,self.partSize),2)
+            pygame.draw.rect(display,(0,255,0), (self.snakeParts[part][0]*self.partSize+1,self.snakeParts[part][1]*self.partSize+1,
+                                                     self.partSize-2,self.partSize-2))
+            if part>0:
+                posX = (self.snakeParts[part-1][0]*self.partSize+self.snakeParts[part][0]*self.partSize)/2+1
+                posY = (self.snakeParts[part-1][1]*self.partSize+self.snakeParts[part][1]*self.partSize)/2+1
+                pygame.draw.rect(display,(0,255,0), (posX,posY,
+                                                     self.partSize-2,self.partSize-2))
+                
+        if not done:
+            pygame.draw.rect(display,fCol, (self.foodPosition[0]*self.partSize,self.foodPosition[1]*self.partSize,
+                                              self.partSize,self.partSize))                                              
             
             
     def change_heading(self,key):
@@ -145,15 +152,17 @@ for y in range(gridY):
 mySnake = Snake(1,allPos,gridBSize)
 running = True
 gameDone = False
+speed = 1
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
     if mySnake.check_death(gridX,gridY):
         gameDone = True
-    if not gameDone:
-        mySnake.move_forw(allPos,gridX,gridY,hCyc)
-    mySnake.draw_snake_food(screen,gameDone)
+    for i in range(speed):
+        if not gameDone:
+            mySnake.move_forw(allPos,gridX,gridY,hCyc)
+        mySnake.draw_snake_food(screen,gameDone)
     time.sleep(0.01)
     pygame.display.flip()
 pygame.quit()
