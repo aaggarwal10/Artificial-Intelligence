@@ -10,9 +10,6 @@ gridY = 36
 gridBSize=20
 screen = pygame.display.set_mode([gridX*gridBSize,gridY*gridBSize])
 
-
-
-
 class Snake:
     heading = 0 # 0: Right, 1: Up, 2: Left, 3: Down
     snakeParts = []
@@ -21,8 +18,8 @@ class Snake:
     partSize = 0
     foodPosition = []
     def __init__(self,speed,gridSizeX, gridSizeY,gridBSize):
-        self.snakeParts = [[3,3]]
-        self.heading = 0
+        self.snakeParts = [[randint(4,gridSizeX-4),randint(4,gridSizeY-4)]]
+        self.heading = randint(0,3)
         self.partSize = gridBSize
         self.foodPosition = self.getFoodPos(gridSizeX,gridSizeY,self.snakeParts)
     
@@ -103,6 +100,9 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        elif event.type==pygame.KEYUP and event.key == pygame.K_RETURN and gameDone:
+            mySnake = Snake(1,gridX,gridY,gridBSize)
+            gameDone = False
         elif event.type==pygame.KEYUP:
             mySnake.change_heading(event.key)
     if mySnake.check_death(gridX,gridY):
