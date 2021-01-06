@@ -135,8 +135,8 @@ class Snake:
         else:
                 return False
 
-gridX = 18
-gridY = 10
+gridX = 20
+gridY = 20
 gridBSize= 20
 screen = pygame.display.set_mode([gridX*gridBSize,gridY*gridBSize])
   
@@ -153,16 +153,17 @@ mySnake = Snake(1,allPos,gridBSize)
 running = True
 gameDone = False
 speed = 1
+start = 0
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+    start = time.time()
     if mySnake.check_death(gridX,gridY):
         gameDone = True
     for i in range(speed):
         if not gameDone:
             mySnake.move_forw(allPos,gridX,gridY,hCyc)
         mySnake.draw_snake_food(screen,gameDone)
-    time.sleep(0.01)
     pygame.display.flip()
 pygame.quit()
